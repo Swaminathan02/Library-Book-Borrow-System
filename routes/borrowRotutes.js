@@ -7,6 +7,7 @@ const Borrow = require("../models/borrow");
 
 const getNextId = require("../config/getNextId");
 
+// Post Borrow Book
 router.post("/", async (req, res) => {
   try {
     const { memberId, bookId } = req.body;
@@ -54,6 +55,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Post Return Book
 router.post("/return", async (req, res) => {
   try {
     const { memberId, bookId } = req.body;
@@ -80,12 +82,32 @@ router.post("/return", async (req, res) => {
     }
     await borrow.save();
 
-    // increase book copies
     const book = await Book.findById(bookId);
     book.availableCopies += 1;
     await book.save();
     res.json(borrow);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+});
 
+// Get All Borrow Records
+router.get("/", async (req, res) => {
+  try {
+    const borrows = await Borrow.find();
+    res.json(borrows);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+});
+
+// Get Active Borrows
+router.get("/active", async (req, res) => {
+  try {
+    const borrows = await Borrow.find({
+      returnDate: null,
+    });
+    res.json(borrows);
   } catch (err) {
     res.status(500).json(err.message);
   }
