@@ -13,6 +13,7 @@ connectDB();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
 app.use("/api/books", bookRoutes);
 app.use("/api/members", memberRoutes);
