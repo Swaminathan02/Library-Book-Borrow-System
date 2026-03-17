@@ -3,7 +3,7 @@ const cors = require("cors");
 const { config } = require("dotenv");
 require("dotenv").config();
 
-const connectDB = require("./config/db")
+const connectDB = require("./config/db");
 const bookRoutes = require("./routes/bookRoutes");
 const memberRoutes = require("./routes/memberRoutes");
 const borrowRoutes = require("./routes/borrowRotutes");
@@ -19,11 +19,11 @@ app.use("/api/members", memberRoutes);
 app.use("/api/borrows", borrowRoutes);
 
 app.get("/", (req, res) => {
-    res.send("Library API running");
+  res.send("Library API running");
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
