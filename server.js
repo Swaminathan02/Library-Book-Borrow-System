@@ -4,12 +4,15 @@ const { config } = require("dotenv");
 require("dotenv").config();
 
 const connectDB = require("./config/db")
+const bookRoutes = require("./routes/bookRoutes");
 const app = express();
 
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+
+app.use("/api/books", bookRoutes);
 
 app.get("/", (req, res) => {
     res.send("Library API running");
