@@ -1,3 +1,24 @@
+// Load and display all members from backend
+async function loadMembers() {
+  try {
+    const res = await fetch(API + "/members");
+    const data = await res.json();
+    const list = document.getElementById("memberList");
+    list.innerHTML = "";
+    if (!Array.isArray(data)) {
+      list.innerHTML = "<li>No members found</li>";
+      return;
+    }
+    data.forEach((m) => {
+      const li = document.createElement("li");
+      li.innerText = `memberId: ${m.memberId} | name: ${m.name} | email: ${m.email} | borrowLimit: ${m.borrowLimit}`;
+      list.appendChild(li);
+    });
+  } catch (err) {
+    alert("Failed to load members");
+    console.log(err);
+  }
+}
 const API = "http://localhost:5000/api";
 
 async function addBook() {
@@ -36,36 +57,74 @@ async function loadBooks() {
 async function borrowBook() {
   const memberId = document.getElementById("memberId").value;
   const bookId = document.getElementById("bookId").value;
-
-  await fetch(API + "/borrows", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      memberId: Number(memberId),
-      bookId: Number(bookId),
-    }),
-  });
-
-  alert("Borrowed");
+  try {
+    const res = await fetch(API + "/borrows", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: Number(memberId),
+        bookId: Number(bookId),
+      }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      alert(data.error);
+    } else if (data.message) {
+      alert(data.message);
+    } else {
+      alert("Borrowed");
+    }
+  } catch (err) {
+    alert("Request failed");
+    console.log(err);
+  }
 }
 
 async function returnBook() {
   const memberId = document.getElementById("rMemberId").value;
   const bookId = document.getElementById("rBookId").value;
+  try {
+    const res = await fetch(API + "/borrows/return", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: Number(memberId),
+        bookId: Number(bookId),
+      }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      alert(data.error);
+    } else if (data.message) {
+      alert(data.message);
+    } else {
+      alert("Returned");
+    }
+  } catch (err) {
+    alert("Request failed");
+    console.log(err);
+  }
+}
 
-  await fetch(API + "/borrows/return", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      memberId: Number(memberId),
-      bookId: Number(bookId),
-    }),
+// Load and display borrow records with due date and fine
+async function loadBorrows() {
+  const res = await fetch(API + "/borrows");
+  const data = await res.json();
+  const list = document.getElementById("borrowList");
+  list.innerHTML = "";
+  if (!Array.isArray(data)) {
+    list.innerHTML = "<li>No records found</li>";
+    return;
+  }
+  data.forEach((b) => {
+    const li = document.createElement("li");
+    li.innerText = `BorrowId: ${b.borrowId} | Member: ${b.member} | Book: ${b.book} | Due: ${b.dueDate ? new Date(b.dueDate).toLocaleDateString() : "-"} | Returned: ${b.returnDate ? new Date(b.returnDate).toLocaleDateString() : "No"} | Fine: ${b.fine || 0}`;
+    list.appendChild(li);
   });
-  alert("Returned");
 }
 
 async function addMember() {

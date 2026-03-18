@@ -23,9 +23,9 @@
 
     <h2>Add Member</h2>
 
-    <input id="mName" placeholder="Name">
-    <input id="mEmail" placeholder="Email">
-    <input id="mLimit" placeholder="Limit">
+    <input id="mName" placeholder="Name" />
+    <input id="mEmail" placeholder="Email" />
+    <input id="mLimit" placeholder="Limit" />
 
     <button onclick="addMember()">Add Member</button>
 
@@ -42,6 +42,14 @@
     <input id="rBookId" placeholder="BookId" />
 
     <button onclick="returnBook()">Return</button>
+
+    <h2>Borrow Records</h2>
+    <button onclick="loadBorrows()">Load Borrow Records</button>
+    <ul id="borrowList"></ul>
+
+    <h2>All Members</h2>
+    <button onclick="loadMembers()">Load Members</button>
+    <ul id="memberList"></ul>
 
     <script src="script.js"></script>
   </body>
