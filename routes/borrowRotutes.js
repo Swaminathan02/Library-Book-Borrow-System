@@ -13,35 +13,39 @@ router.post("/", async (req, res) => {
     const { memberId, bookId } = req.body;
 
     // check member
-    const member = await Member.findById(memberId);
+    const member = await Member.findOne({ memberId });
     if (!member) {
       return res.json({ message: "Member not found" });
     }
+
     // check book
-    const book = await Book.findById(bookId);
+    const book = await Book.findOne({ bookId });
     if (!book) {
       return res.json({ message: "Book not found" });
     }
+
     // check availability
     if (book.availableCopies <= 0) {
       return res.json({ message: "Book not available" });
     }
-    // count active borrows
+
+    // count active borrows for this member
     const borrowedCount = await Borrow.countDocuments({
-      member: memberId,
+      member: member._id,
       returnDate: null,
     });
     if (borrowedCount >= member.borrowLimit) {
       return res.json({ message: "Borrow limit reached" });
     }
+
     const dueDate = new Date(); // due date
     dueDate.setDate(dueDate.getDate() + 7);
 
     const id = await getNextId("borrow");
     const borrow = new Borrow({
       borrowId: id,
-      member: memberId,
-      book: bookId,
+      member: member._id,
+      book: book._id,
       dueDate,
     });
 
@@ -59,9 +63,16 @@ router.post("/", async (req, res) => {
 router.post("/return", async (req, res) => {
   try {
     const { memberId, bookId } = req.body;
+
+    const member = await Member.findOne({ memberId });
+    const book = await Book.findOne({ bookId });
+    if (!member || !book) {
+      return res.json({ message: "Member or book not found" });
+    }
+
     const borrow = await Borrow.findOne({
-      member: memberId,
-      book: bookId,
+      member: member._id,
+      book: book._id,
       returnDate: null,
     });
 
@@ -82,7 +93,6 @@ router.post("/return", async (req, res) => {
     }
     await borrow.save();
 
-    const book = await Book.findById(bookId);
     book.availableCopies += 1;
     await book.save();
     res.json(borrow);
