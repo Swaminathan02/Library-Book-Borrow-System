@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
 
     // count active borrows for this member
     const borrowedCount = await Borrow.countDocuments({
-      member: member._id,
+      memberId: member.memberId,
       returnDate: null,
     });
     if (borrowedCount >= member.borrowLimit) {
@@ -44,8 +44,8 @@ router.post("/", async (req, res) => {
     const id = await getNextId("borrow");
     const borrow = new Borrow({
       borrowId: id,
-      member: member._id,
-      book: book._id,
+      memberId: member.memberId,
+      bookId: book.bookId,
       dueDate,
     });
 
@@ -71,8 +71,8 @@ router.post("/return", async (req, res) => {
     }
 
     const borrow = await Borrow.findOne({
-      member: member._id,
-      book: book._id,
+      memberId: member.memberId,
+      bookId: book.bookId,
       returnDate: null,
     });
 
