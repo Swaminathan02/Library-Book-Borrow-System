@@ -122,7 +122,7 @@ async function loadBorrows() {
   }
   data.forEach((b) => {
     const li = document.createElement("li");
-    li.innerText = `BorrowId: ${b.borrowId} | Member: ${b.member} | Book: ${b.book} | Due: ${b.dueDate ? new Date(b.dueDate).toLocaleDateString() : "-"} | Returned: ${b.returnDate ? new Date(b.returnDate).toLocaleDateString() : "No"} | Fine: ${b.fine || 0}`;
+    li.innerText = `BorrowId: ${b.borrowId} | MemberId: ${b.memberId} | BookId: ${b.bookId} | Due: ${b.dueDate ? new Date(b.dueDate).toLocaleDateString() : "-"} | Returned: ${b.returnDate ? new Date(b.returnDate).toLocaleDateString() : "No"} | Fine: ${b.fine || 0}`;
     list.appendChild(li);
   });
 }

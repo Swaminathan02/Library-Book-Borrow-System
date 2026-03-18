@@ -13,12 +13,12 @@ router.post("/", async (req, res) => {
     const { memberId, bookId } = req.body;
 
     // check member
-    const member = await Member.findById(memberId);
+    const member = await Member.findOne({ memberId });
     if (!member) {
       return res.json({ message: "Member not found" });
     }
     // check book
-    const book = await Book.findById(bookId);
+    const book = await Book.findOne({ bookId });
     if (!book) {
       return res.json({ message: "Book not found" });
     }
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
     }
     // count active borrows
     const borrowedCount = await Borrow.countDocuments({
-      member: memberId,
+      memberId: member.memberId,
       returnDate: null,
     });
     if (borrowedCount >= member.borrowLimit) {
@@ -40,8 +40,8 @@ router.post("/", async (req, res) => {
     const id = await getNextId("borrow");
     const borrow = new Borrow({
       borrowId: id,
-      member: memberId,
-      book: bookId,
+      memberId: member.memberId,
+      bookId: book.bookId,
       dueDate,
     });
 
@@ -59,9 +59,15 @@ router.post("/", async (req, res) => {
 router.post("/return", async (req, res) => {
   try {
     const { memberId, bookId } = req.body;
+    const member = await Member.findOne({ memberId });
+    const book = await Book.findOne({ bookId });
+    if (!member || !book) {
+      return res.json({ message: "Member or book not found" });
+    }
+
     const borrow = await Borrow.findOne({
-      member: memberId,
-      book: bookId,
+      memberId: member.memberId,
+      bookId: book.bookId,
       returnDate: null,
     });
 
@@ -82,7 +88,6 @@ router.post("/return", async (req, res) => {
     }
     await borrow.save();
 
-    const book = await Book.findById(bookId);
     book.availableCopies += 1;
     await book.save();
     res.json(borrow);

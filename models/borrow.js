@@ -5,14 +5,12 @@ const borrowSchema = new mongoose.Schema(
     borrowId: {
       type: Number,
     },
-    member: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Member",
+    memberId: {
+      type: Number,
       required: true,
     },
-    book: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Book",
+    bookId: {
+      type: Number,
       required: true,
     },
     borrowDate: {
